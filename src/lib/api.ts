@@ -10,8 +10,6 @@ export const fetchUsers = async (signal?: AbortSignal): Promise<User[]> => {
     }
 
     const data = (await res.json()) as unknown;
-
-    // minimal runtime sanity: ensure array
     if (!Array.isArray(data)) {
         throw new Error("Unexpected API response");
     }

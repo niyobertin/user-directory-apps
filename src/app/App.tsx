@@ -7,6 +7,7 @@ import SortToggle from "../components/SortToggle";
 import StateBanner from "../components/StateBanner";
 import UserList from "../components/UserList";
 import UserDetailsModal from "../components/UserDetailsModal";
+import UserSearchEmptyState from "../components/UserSearchEmptyState";
 
 const useDirectoryParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,7 +62,7 @@ const DirectoryPage = () => {
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-4">
           <div className="flex-1">
             <h1 className="text-lg font-semibold tracking-tight">User Directory</h1>
-            <p className="text-sm text-slate-600">Browse and search users (JSONPlaceholder).</p>
+            <p className="text-sm text-slate-600">Browse and search users.</p>
           </div>
           <a
             className="hidden text-sm font-medium text-indigo-700 hover:text-indigo-800 sm:inline"
@@ -75,9 +76,13 @@ const DirectoryPage = () => {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <SearchBar value={q} onChange={setQ} />
-          <SortToggle value={sort} onChange={setSort} />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="w-full sm:max-w-lg">
+            <SearchBar value={q} onChange={setQ} />
+          </div>
+          <div className="shrink-0">
+            <SortToggle value={sort} onChange={setSort} />
+          </div>
         </div>
 
         <div className="mt-5">
@@ -85,10 +90,11 @@ const DirectoryPage = () => {
             status={status}
             errorMessage={errorMessage}
             onRetry={refetch}
-            empty={status === "success" && filtered.length === 0}
-            emptyTitle="No users found"
-            emptyDescription={q ? `No matches for "${q}". Try another name.` : "No users to display."}
           />
+
+          {status === "success" && filtered.length === 0 && (
+            <UserSearchEmptyState searchTerm={q} onClear={() => setQ("")} />
+          )}
 
           {(status === "success" || status === "loading") && (
             <>
@@ -98,19 +104,21 @@ const DirectoryPage = () => {
                   of <span className="font-medium text-slate-900">{users.length}</span>
                 </div>
               )}
-              <UserList
-                users={filtered}
-                onSelect={openUser}
-                selectedId={selectedId ?? undefined}
-                loading={status === "loading"}
-              />
+              {(status === "loading" || filtered.length > 0) && (
+                <UserList
+                  users={filtered}
+                  onSelect={openUser}
+                  selectedId={selectedId ?? undefined}
+                  loading={status === "loading"}
+                />
+              )}
             </>
           )}
         </div>
       </main>
 
       <UserDetailsModal user={selectedUser} open={Boolean(selectedId)} onClose={closeModal} />
-    </div>
+    </div >
   );
 };
 
