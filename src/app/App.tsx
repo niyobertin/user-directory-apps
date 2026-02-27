@@ -1,23 +1,127 @@
-import reactLogo from '../assets/react.svg'
-import viteLogo from '/vite.svg'
-import '../App.css'
+import { Routes, Route, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useUsers } from "../hooks/useUsers";
+import { filterUsersByName, sortUsers, type SortMode } from "../lib/filterUsers";
+import SearchBar from "../components/SearchBar";
+import SortToggle from "../components/SortToggle";
+import StateBanner from "../components/StateBanner";
+import UserList from "../components/UserList";
+import UserDetailsModal from "../components/UserDetailsModal";
 
-function App() {
+const useDirectoryParams = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const q = searchParams.get("q") ?? "";
+  const sort = (searchParams.get("sort") as SortMode) ?? "asc";
+
+  const setQ = (nextQ: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (nextQ.trim()) next.set("q", nextQ);
+    else next.delete("q");
+    setSearchParams(next, { replace: true });
+  };
+
+  const setSort = (nextSort: SortMode) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("sort", nextSort);
+    setSearchParams(next, { replace: true });
+  };
+
+  return { q, sort, searchParams, setQ, setSort };
+};
+
+const DirectoryPage = () => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const selectedId = params.id ? Number(params.id) : null;
+
+  const { q, sort, searchParams, setQ, setSort } = useDirectoryParams();
+  const { status, users, errorMessage, refetch } = useUsers();
+
+  const filtered = useMemo(() => {
+    const byName = filterUsersByName(users, q);
+    return sortUsers(byName, sort);
+  }, [users, q, sort]);
+
+  const selectedUser = selectedId ? users.find((u) => u.id === selectedId) : undefined;
+
+  const openUser = (id: number) => {
+    const search = searchParams.toString();
+    navigate({ pathname: `/users/${id}`, search: search ? `?${search}` : "" });
+  };
+
+  const closeModal = () => {
+    const search = searchParams.toString();
+    navigate({ pathname: "/", search: search ? `?${search}` : "" }, { replace: true });
+  };
+
   return (
-    <>
-      <div className='flex justify-center items-center gap-4'>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className="text-3xl font-bold text-blue-600 underline mb-4">
-        User Directory App
-      </h1>
-    </>
-  )
-}
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-4">
+          <div className="flex-1">
+            <h1 className="text-lg font-semibold tracking-tight">User Directory</h1>
+            <p className="text-sm text-slate-600">Browse and search users (JSONPlaceholder).</p>
+          </div>
+          <a
+            className="hidden text-sm font-medium text-indigo-700 hover:text-indigo-800 sm:inline"
+            href="https://jsonplaceholder.typicode.com/users"
+            target="_blank"
+            rel="noreferrer"
+          >
+            API
+          </a>
+        </div>
+      </header>
 
-export default App
+      <main className="mx-auto max-w-5xl px-4 py-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <SearchBar value={q} onChange={setQ} />
+          <SortToggle value={sort} onChange={setSort} />
+        </div>
+
+        <div className="mt-5">
+          <StateBanner
+            status={status}
+            errorMessage={errorMessage}
+            onRetry={refetch}
+            empty={status === "success" && filtered.length === 0}
+            emptyTitle="No users found"
+            emptyDescription={q ? `No matches for "${q}". Try another name.` : "No users to display."}
+          />
+
+          {(status === "success" || status === "loading") && (
+            <>
+              {status === "success" && filtered.length > 0 && (
+                <div className="mb-3 text-sm text-slate-600">
+                  Showing <span className="font-medium text-slate-900">{filtered.length}</span>{" "}
+                  of <span className="font-medium text-slate-900">{users.length}</span>
+                </div>
+              )}
+              <UserList
+                users={filtered}
+                onSelect={openUser}
+                selectedId={selectedId ?? undefined}
+                loading={status === "loading"}
+              />
+            </>
+          )}
+        </div>
+      </main>
+
+      <UserDetailsModal user={selectedUser} open={Boolean(selectedId)} onClose={closeModal} />
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<DirectoryPage />} />
+      <Route path="/users/:id" element={<DirectoryPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+export default App;
