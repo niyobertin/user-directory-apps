@@ -2,7 +2,7 @@
 
 A robust React application for browsing, sorting, and filtering user data. Built as a technical showcase of modern frontend practices.
 
-## 🚀 Live Preview & Code
+## Live Preview & Code
 - **Framework:** React 19 + TypeScript + Vite
 - **Styling:** Tailwind CSS (v4)
 - **Routing:** React Router v7
@@ -10,7 +10,7 @@ A robust React application for browsing, sorting, and filtering user data. Built
 
 ---
 
-## 💻 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v20+ recommended)
@@ -46,7 +46,7 @@ yarn test:ui
 
 ---
 
-## 🏗 Architecture & State Management
+## Architecture & State Management
 
 A core focus of this application was building a resilient and shareable state infrastructure. 
 
@@ -65,7 +65,7 @@ Data fetching is encapsulated in a highly reusable `useUsers` custom hook.
 
 ---
 
-## 🧠 Assumptions Made
+## Assumptions Made
 
 1. **Client-side Filtering:** The API endpoint (`/users`) is small enough (10 records) that client-side filtering and sorting is exponentially faster and more efficient than making continuous network requests per keystroke.
 2. **Read-Only Data:** The take-home prompt only requested fetching the users, so the UI assumes the data is read-only (No edit or delete mutations are provided). 
@@ -73,7 +73,7 @@ Data fetching is encapsulated in a highly reusable `useUsers` custom hook.
 
 ---
 
-## 📈 Future Improvements
+## Future Improvements
 
 If this were a production application, I would implement the following next steps:
 
