@@ -19,7 +19,7 @@ A robust React application for browsing, sorting, and filtering user data. Built
 ### Installation & Running Locally
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/niyobertin/user-directory-apps
    cd user-directory-app
    ```
 2. Install the dependencies:
