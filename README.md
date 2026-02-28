@@ -18,6 +18,7 @@ A robust React application for browsing, sorting, and filtering user data. Built
 - Node.js (v20+ recommended)
 - `npm` or `yarn`
 
+
 ### Installation & Running Locally
 
 1. Clone the repository:
@@ -31,6 +32,16 @@ A robust React application for browsing, sorting, and filtering user data. Built
    # or
    npm install
    ```
+
+### Environment Setup
+
+Before starting the server, initialize the environment variables:
+1. Copy the example configuration:
+   ```bash
+   cp .env.example .env
+   ```
+2. The default `VITE_API_URL` uses the JSONPlaceholder mock service.
+
 3. Start the development server:
    ```bash
    yarn dev
