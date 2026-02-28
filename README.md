@@ -75,7 +75,7 @@ Data fetching is encapsulated in a highly reusable `useUsers` custom hook.
 
 ## Future Improvements
 
-If this were a production application, I would implement the following next steps:
+If this were a production application, I would implement the following next steps :
 
 1. **Accessibility (a11y) Modal Trapping:** While the `UserDetailsModal` closes on `Escape`, true focus-trapping (via `react-focus-lock` or manual refs) should be implemented so keyboard navigators cannot tab into the background `#root` element while the modal is open.
 2. **Data Caching / React Query:** If the dataset was larger or prone to background updates, swapping the custom `useUsers` hook for `TanStack Query (React Query)` would provide out-of-the-box caching, dedication re-fetching, and infinite scroll pagination.
