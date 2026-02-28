@@ -1,11 +1,10 @@
 import { Search } from "lucide-react";
 
 interface UserSearchEmptyStateProps {
-  searchTerm: string;
   onClear: () => void;
 }
 
-const UserSearchEmptyState = ({ searchTerm, onClear }: UserSearchEmptyStateProps) => {
+const UserSearchEmptyState = ({ onClear }: UserSearchEmptyStateProps) => {
   return (
     <div
       style={{
@@ -46,14 +45,7 @@ const UserSearchEmptyState = ({ searchTerm, onClear }: UserSearchEmptyStateProps
           lineHeight: 1.6,
         }}
       >
-        {searchTerm ? (
-          <>
-            No results for <strong style={{ color: "#374151" }}>"{searchTerm}"</strong>. Try a
-            different name.
-          </>
-        ) : (
-          "We couldn't find any users matching your search. Try adjusting your filters."
-        )}
+        No users found. Try a different name.
       </p>
 
       <button

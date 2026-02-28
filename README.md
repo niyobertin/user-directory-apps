@@ -18,7 +18,6 @@ A robust React application for browsing, sorting, and filtering user data. Built
 - Node.js (v20+ recommended)
 - `npm` or `yarn`
 
-
 ### Installation & Running Locally
 
 1. Clone the repository:
@@ -36,6 +35,7 @@ A robust React application for browsing, sorting, and filtering user data. Built
 ### Environment Setup
 
 Before starting the server, initialize the environment variables:
+
 1. Copy the example configuration:
    ```bash
    cp .env.example .env
@@ -92,14 +92,6 @@ Data fetching is encapsulated in a highly reusable `useUsers` custom hook.
 
 - It uses an `AbortController` to prevent stale data overriding new requests and stops memory leaks on unmount.
 - The raw API data is only fetched **once on mount**. All subsequent filtering/sorting is done cleanly on the client side via a memoized `useMemo` block to prevent unnecessary re-renders during UI interactions.
-
----
-
-## Assumptions Made
-
-1. **Client-side Filtering:** The API endpoint (`/users`) is small enough (10 records) that client-side filtering and sorting is exponentially faster and more efficient than making continuous network requests per keystroke.
-2. **Read-Only Data:** The take-home prompt only requested fetching the users, so the UI assumes the data is read-only (No edit or delete mutations are provided).
-3. **Data Shape:** Assumed the standard JSONPlaceholder `/users` array schema will remain consistent, so properties like `user.address.street` can be safely mapped without optional chaining at every single node.
 
 ---
 
