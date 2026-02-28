@@ -93,6 +93,15 @@ Data fetching is encapsulated in a highly reusable `useUsers` custom hook.
 - It uses an `AbortController` to prevent stale data overriding new requests and stops memory leaks on unmount.
 - The raw API data is only fetched **once on mount**. All subsequent filtering/sorting is done cleanly on the client side via a memoized `useMemo` block to prevent unnecessary re-renders during UI interactions.
 
+## Assumptions
+
+During the development of this application, the following assumptions were made:
+
+1.  **Client-Side Processing:** The user dataset (initially 10 users) is small enough that client-side filtering and sorting provide the best UX without taxing system resources.
+2.  **API Consistency:** The JSONPlaceholder endpoint is assumed to be the primary source of truth, providing consistent data structures for all user objects.
+3.  **Modern Environments:** The application is intended to run in modern evergreen browsers (Chrome, Firefox, Safari, Edge) that support ES6+ features.
+4.  **Network Connectivity:** A stable internet connection is required to fetch the initial user list, though subsequent interactions are handled locally.
+
 ---
 
 ## Future Improvements
