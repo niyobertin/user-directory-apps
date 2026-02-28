@@ -86,11 +86,7 @@ const DirectoryPage = () => {
         </div>
 
         <div className="mt-5">
-          <StateBanner
-            status={status}
-            errorMessage={errorMessage}
-            onRetry={refetch}
-          />
+          <StateBanner status={status} errorMessage={errorMessage} onRetry={refetch} />
 
           {status === "success" && filtered.length === 0 && (
             <UserSearchEmptyState searchTerm={q} onClear={() => setQ("")} />
@@ -100,8 +96,8 @@ const DirectoryPage = () => {
             <>
               {status === "success" && filtered.length > 0 && (
                 <div className="mb-3 text-sm text-slate-600">
-                  Showing <span className="font-medium text-slate-900">{filtered.length}</span>{" "}
-                  of <span className="font-medium text-slate-900">{users.length}</span>
+                  Showing <span className="font-medium text-slate-900">{filtered.length}</span> of{" "}
+                  <span className="font-medium text-slate-900">{users.length}</span>
                 </div>
               )}
               {(status === "loading" || filtered.length > 0) && (
@@ -118,7 +114,7 @@ const DirectoryPage = () => {
       </main>
 
       <UserDetailsModal user={selectedUser} open={Boolean(selectedId)} onClose={closeModal} />
-    </div >
+    </div>
   );
 };
 

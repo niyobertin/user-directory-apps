@@ -7,73 +7,78 @@ import { fetchUsers } from "../../lib/api";
 import { mockUsers } from "../../constants/mockData";
 
 vi.mock("../../lib/api", () => ({
-    fetchUsers: vi.fn(),
+  fetchUsers: vi.fn(),
 }));
 
 const LocationDisplay = () => {
-    const location = useLocation();
-    return <div data-testid="location-display">{location.pathname}{location.search}</div>;
+  const location = useLocation();
+  return (
+    <div data-testid="location-display">
+      {location.pathname}
+      {location.search}
+    </div>
+  );
 };
 
 describe("App Integration", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should fetch users and render them, then update URL and filter when searching", async () => {
+    vi.mocked(fetchUsers).mockResolvedValueOnce(mockUsers);
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+        <LocationDisplay />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Leanne Graham")).toBeInTheDocument();
+      expect(screen.getByText("Ervin Howell")).toBeInTheDocument();
     });
 
-    it("should fetch users and render them, then update URL and filter when searching", async () => {
-        vi.mocked(fetchUsers).mockResolvedValueOnce(mockUsers);
+    const searchInput = screen.getByPlaceholderText("e.g. Leanne Graham");
 
-        render(
-            <MemoryRouter initialEntries={["/"]}>
-                <App />
-                <LocationDisplay />
-            </MemoryRouter>
-        );
+    await userEvent.type(searchInput, "Ervin");
 
-        await waitFor(() => {
-            expect(screen.getByText("Leanne Graham")).toBeInTheDocument();
-            expect(screen.getByText("Ervin Howell")).toBeInTheDocument();
-        });
+    await waitFor(() => {
+      expect(screen.queryByText("Leanne Graham")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Ervin Howell")).toBeInTheDocument();
 
-        const searchInput = screen.getByPlaceholderText("e.g. Leanne Graham");
+    expect(screen.getByTestId("location-display")).toHaveTextContent("/?q=Ervin");
+  });
 
-        await userEvent.type(searchInput, "Ervin");
+  it("should update URL when a user is clicked and open modal", async () => {
+    vi.mocked(fetchUsers).mockResolvedValueOnce(mockUsers);
 
-        await waitFor(() => {
-            expect(screen.queryByText("Leanne Graham")).not.toBeInTheDocument();
-        });
-        expect(screen.getByText("Ervin Howell")).toBeInTheDocument();
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+        <LocationDisplay />
+      </MemoryRouter>
+    );
 
-        expect(screen.getByTestId("location-display")).toHaveTextContent("/?q=Ervin");
+    await waitFor(() => {
+      expect(screen.getByText("Leanne Graham")).toBeInTheDocument();
     });
 
-    it("should update URL when a user is clicked and open modal", async () => {
-        vi.mocked(fetchUsers).mockResolvedValueOnce(mockUsers);
+    const userCard = screen.getByText("Leanne Graham").closest("article");
+    expect(userCard).not.toBeNull();
 
-        render(
-            <MemoryRouter initialEntries={["/"]}>
-                <App />
-                <LocationDisplay />
-            </MemoryRouter>
-        );
+    await userEvent.click(userCard!);
 
-        await waitFor(() => {
-            expect(screen.getByText("Leanne Graham")).toBeInTheDocument();
-        });
+    expect(screen.getByText("Full profile details")).toBeInTheDocument();
 
-        const userCard = screen.getByText("Leanne Graham").closest("button");
-        expect(userCard).not.toBeNull();
+    expect(screen.getByTestId("location-display")).toHaveTextContent("/users/1");
 
-        await userEvent.click(userCard!);
+    const closeBtn = screen.getByLabelText("Close overlay");
+    await userEvent.click(closeBtn);
 
-        expect(screen.getByText("Full profile details")).toBeInTheDocument();
-
-        expect(screen.getByTestId("location-display")).toHaveTextContent("/users/1");
-
-        const closeBtn = screen.getByLabelText("Close overlay");
-        await userEvent.click(closeBtn);
-
-        expect(screen.queryByText("Full profile details")).not.toBeInTheDocument();
-        expect(screen.getByTestId("location-display")).toHaveTextContent("/");
-    });
+    expect(screen.queryByText("Full profile details")).not.toBeInTheDocument();
+    expect(screen.getByTestId("location-display")).toHaveTextContent("/");
+  });
 });
